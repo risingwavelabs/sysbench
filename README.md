@@ -451,6 +451,28 @@ sysbench \
 run
 ```
 
+### select_random_limits.lua
+```
+sysbench \
+--db-driver=pgsql \
+--pgsql-host=localhost  \
+--pgsql-port=4566  \
+--pgsql-user=root \
+--pgsql-db=dev \
+--threads=16 \
+--report-interval=1 \
+--events=0 \
+--time=10 \
+--percentile=99 \
+--auto_inc=false \
+--table_size=1000000 \
+--db-ps-mode=disable \
+--skip_trx=true \
+--range_size=1 \
+/usr/local/share/sysbench/select_random_limits.lua \
+run
+```
+
 ## CleanUp
 ```
 sysbench \
