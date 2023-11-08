@@ -203,7 +203,18 @@ CREATE TABLE sbtest%d(
 ) %s %s]],
               table_num, id_def, id_index_def, engine_def,
               sysbench.opt.create_table_options)
-
+      if drv:name() == "mysql" then
+         query = string.format([[
+CREATE TABLE sbtest%d(
+  id %s,
+  k INTEGER,
+  c VARCHAR(120),
+  pad VARCHAR(60),
+  %s (id)
+) %s %s]],
+              table_num, id_def, id_index_def, engine_def,
+              sysbench.opt.create_table_options)
+      end
       con:query(query)
    end
 
