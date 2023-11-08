@@ -61,6 +61,7 @@ sysbench.cmdline.options = {
        "client-generated IDs", true},
    create_table_options =
       {"Extra CREATE TABLE options", ""},
+   skip_ddl = {"Skip DDL", false},
    skip_trx =
       {"Don't start explicit transactions and execute all queries " ..
           "in the AUTOCOMMIT mode", false},
@@ -189,9 +190,10 @@ function create_table(drv, con, table_num)
       error("Unsupported database driver:" .. drv:name())
    end
 
-   print(string.format("Creating table 'sbtest%d'...", table_num))
+   if not sysbench.opt.skip_ddl then
+      print(string.format("Creating table 'sbtest%d'...", table_num))
 
-   query = string.format([[
+      query = string.format([[
 CREATE TABLE sbtest%d(
   id %s,
   k INTEGER,
@@ -199,10 +201,11 @@ CREATE TABLE sbtest%d(
   pad VARCHAR,
   %s (id)
 ) %s %s]],
-      table_num, id_def, id_index_def, engine_def,
-      sysbench.opt.create_table_options)
+              table_num, id_def, id_index_def, engine_def,
+              sysbench.opt.create_table_options)
 
-   con:query(query)
+      con:query(query)
+   end
 
    if (sysbench.opt.table_size > 0) then
       print(string.format("Inserting %d records into 'sbtest%d'",
@@ -241,13 +244,13 @@ CREATE TABLE sbtest%d(
 
    con:bulk_insert_done()
 
-   if sysbench.opt.create_secondary then
+   if (not sysbench.opt.skip_ddl) and sysbench.opt.create_secondary then
       print(string.format("Creating a secondary index on 'sbtest%d'...",
                           table_num))
       con:query(string.format("CREATE INDEX k_%d ON sbtest%d(k)",
                               table_num, table_num))
    end
-   if sysbench.opt.create_covered_secondary then
+   if (not sysbench.opt.skip_ddl) and sysbench.opt.create_covered_secondary then
       print(string.format("Creating a covered secondary index on 'sbtest%d'...",
                           table_num))
       con:query(string.format("CREATE INDEX ck_%d ON sbtest%d(k) include(id, c, pad)",
