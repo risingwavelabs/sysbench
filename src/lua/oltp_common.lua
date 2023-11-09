@@ -261,7 +261,7 @@ CREATE TABLE sbtest%d(
       con:query(string.format("CREATE INDEX k_%d ON sbtest%d(k)",
                               table_num, table_num))
    end
-   if (not sysbench.opt.skip_ddl) and sysbench.opt.create_covered_secondary then
+   if (not sysbench.opt.skip_ddl) and sysbench.opt.create_covered_secondary and drv:name() ~= "mysql" then
       print(string.format("Creating a covered secondary index on 'sbtest%d'...",
                           table_num))
       con:query(string.format("CREATE INDEX ck_%d ON sbtest%d(k) include(id, c, pad)",
