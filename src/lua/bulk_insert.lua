@@ -22,8 +22,8 @@ function prepare()
       print("Creating table 'sbtest" .. i .. "'...")
       con:query(string.format([[
         CREATE TABLE IF NOT EXISTS sbtest%d (
-          id INTEGER NOT NULL,
-          k INTEGER DEFAULT '0' NOT NULL,
+          id INTEGER,
+          k INTEGER,
           PRIMARY KEY (id))]], i))
    end
 end
