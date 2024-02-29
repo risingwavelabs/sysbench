@@ -3,7 +3,7 @@ FROM ubuntu:22.04
 RUN apt-get update
 
 # Install MySQL and PostgreSQL clients
-RUN apt-get update -yy && DEBIAN_FRONTEND=noninteractive apt-get -y install postgresql-client mysql-client
+RUN apt-get -y install postgresql-client mysql-client
 
 RUN apt-get -y install make automake libtool pkg-config libaio-dev git
 
