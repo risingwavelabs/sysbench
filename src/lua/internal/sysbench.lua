@@ -65,6 +65,14 @@ sysbench.hooks = {
    -- report_cumulative = <func>
 }
 
+function sysbench.hooks.sql_error_ignorable(errdesc)
+   if errdesc.sql_state == "08000" then
+      -- SQLSTATE 08000: Connection exception
+      return true
+   end
+   return false
+end
+
 -- Report statistics in the CSV format. Add the following to your
 -- script to replace the default human-readable reports
 --
