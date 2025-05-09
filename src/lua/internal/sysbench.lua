@@ -66,8 +66,9 @@ sysbench.hooks = {
 }
 
 function sysbench.hooks.sql_error_ignorable(errdesc)
-   if errdesc.sql_state == "08000" then
-      -- SQLSTATE 08000: Connection exception
+   if errdesc.sql_state == "08000" or 
+      errdesc.sql_state == "XX000" 
+   then
       return true
    end
    return false

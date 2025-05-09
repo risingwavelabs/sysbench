@@ -531,7 +531,9 @@ end
 -- the listed error codes are in the --mysql-ignore-errors list
 function sysbench.hooks.before_restart_event(errdesc)
    -- Re-prepare for PG drv.
-   if errdesc.sql_state == "08000" then
+   if errdesc.sql_state == "08000" or
+      errdesc.sql_state == "XX000"
+   then
       close_statements()
       prepare_statements()
    end
