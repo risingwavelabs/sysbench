@@ -1152,7 +1152,7 @@ void db_report_cumulative(sb_stat_t *stat)
   log_text(LOG_NOTICE, "    downtime(milliseconds):              %-6" PRIu64,
           stat->ms_reconnect);
   log_text(LOG_NOTICE, "    uptime(milliseconds):                %-6" PRIu64
-           " (%.6f%%)", (uint64_t)stat->time_total * 1000 - stat->ms_reconnect, 100.0 * (stat->time_total * 1000 - (double)stat->ms_reconnect) / stat->time_total);
+           " (%.6f%%)", (uint64_t)stat->time_total * 1000 - stat->ms_reconnect, 100.0 * (stat->time_total * 1000 - (double)stat->ms_reconnect) / (stat->time_total * 1000));
   
 
   if (db_globals.debug)
