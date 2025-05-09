@@ -159,7 +159,7 @@ static inline uint64_t sb_event_timer_restart(sb_timer_t *t)
   t->time_event_restart = ts;
 
   ck_spinlock_unlock(&t->lock);
-  return NS2MS(elapsed);
+  return elapsed;
 }
 
 /*

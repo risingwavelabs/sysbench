@@ -773,7 +773,7 @@ void sb_event_stop(int thread_id)
 void sb_on_restart_event(int thread_id)
 {
     uint64_t elapsed = sb_event_timer_restart(&timers[thread_id]);
-    sb_counter_add(thread_id, SB_DURATION_FAILURE, elapsed);
+    sb_counter_add(thread_id, SB_DURATION_FAILURE, NS2MS(elapsed));
 }
 
 /* Main event loop -- the default thread_run implementation */
