@@ -110,7 +110,7 @@ typedef struct {
 
   uint64_t queue_length;        /* Event queue length (tx_rate-only) */
   uint64_t concurrency;         /* Number of in-flight events (tx_rate-only) */
-  uint64_t seconds_reconnect;    /* Seconds spent reconnecting */
+  uint64_t ms_reconnect;        /* milliseconds spent reconnecting */
 } sb_stat_t;
 
 /* Commands */

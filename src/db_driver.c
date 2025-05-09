@@ -391,9 +391,9 @@ int db_connection_reconnect(db_conn_t *con)
 
     SB_GETTIME(&stop);
     res = TIMESPEC_DIFF(stop, start);
-    uint64_t sec = res / 1000000000;
-    sb_counter_add(con->thread_id, SB_DURATION_RECONNECT, sec);
-    log_text(LOG_DEBUG, "Reconnecting completed in %lu sec.", sec);
+    uint64_t milliseconds = res / 1000000;
+    sb_counter_add(con->thread_id, SB_DURATION_RECONNECT, milliseconds);
+    log_text(LOG_DEBUG, "Reconnecting completed in %lu milliseconds.", milliseconds);
   }
   return rc;
 }
@@ -1149,10 +1149,10 @@ void db_report_cumulative(sb_stat_t *stat)
            " (%.2f per sec.)", stat->errors, stat->errors / seconds);
   log_text(LOG_NOTICE, "    reconnects:                          %-6" PRIu64
            " (%.2f per sec.)", stat->reconnects, stat->reconnects / seconds);
-  log_text(LOG_NOTICE, "    downtime(sec):                       %-6" PRIu64,
-          stat->seconds_reconnect);
-  log_text(LOG_NOTICE, "    uptime(sec):                         %-6" PRIu64
-           " (%.6f%%)", (uint64_t)stat->time_total - stat->seconds_reconnect, 100.0 * (stat->time_total - (double)stat->seconds_reconnect) / stat->time_total);
+  log_text(LOG_NOTICE, "    downtime(milliseconds):              %-6" PRIu64,
+          stat->ms_reconnect);
+  log_text(LOG_NOTICE, "    uptime(milliseconds):                %-6" PRIu64
+           " (%.6f%%)", (uint64_t)stat->time_total * 1000 - stat->ms_reconnect, 100.0 * (stat->time_total * 1000 - (double)stat->ms_reconnect) / stat->time_total);
   
 
   if (db_globals.debug)
