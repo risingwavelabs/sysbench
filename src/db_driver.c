@@ -350,6 +350,11 @@ int db_connection_close(db_conn_t *con)
 
 int db_connection_reconnect(db_conn_t *con)
 {
+  struct timespec start, stop;
+  uint64_t        res;
+  SB_GETTIME(&start);
+
+  log_text(LOG_DEBUG, "Reconnecting until either success or fatal error.");
   int         rc;
   db_driver_t *drv = con->driver;
 
@@ -383,8 +388,13 @@ int db_connection_reconnect(db_conn_t *con)
 
     /* Clear DB_ERROR_IGNORABLE */
     rc = DB_ERROR_NONE;
-  }
 
+    SB_GETTIME(&stop);
+    res = TIMESPEC_DIFF(stop, start);
+    uint64_t sec = res / 1000000000;
+    sb_counter_add(con->thread_id, SB_DURATION_RECONNECT, sec);
+    log_text(LOG_DEBUG, "Reconnecting completed in %lu sec.", sec);
+  }
   return rc;
 }
 
@@ -1139,6 +1149,11 @@ void db_report_cumulative(sb_stat_t *stat)
            " (%.2f per sec.)", stat->errors, stat->errors / seconds);
   log_text(LOG_NOTICE, "    reconnects:                          %-6" PRIu64
            " (%.2f per sec.)", stat->reconnects, stat->reconnects / seconds);
+  log_text(LOG_NOTICE, "    downtime(sec):                       %-6" PRIu64,
+          stat->seconds_reconnect);
+  log_text(LOG_NOTICE, "    uptime(sec):                         %-6" PRIu64
+           " (%.6f%%)", (uint64_t)stat->time_total - stat->seconds_reconnect, 100.0 * (stat->time_total - (double)stat->seconds_reconnect) / stat->time_total);
+  
 
   if (db_globals.debug)
   {

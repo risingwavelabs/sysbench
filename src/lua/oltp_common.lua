@@ -530,14 +530,10 @@ end
 -- Re-prepare statements if we have reconnected, which is possible when some of
 -- the listed error codes are in the --mysql-ignore-errors list
 function sysbench.hooks.before_restart_event(errdesc)
+   -- Re-prepare for PG drv.
    if errdesc.sql_state == "08000" then
-      print(string.format(
-       "Reconnecting to the database after error %d: %s",
-      errdesc.sql_errno, errdesc.sql_state))
-      -- TODO: add retry interval
-      -- local socket = require("socket")
-      -- socket.sleep(1) 
-      con:reconnect()
+      close_statements()
+      prepare_statements()
    end
 
    if errdesc.sql_errno == 2013 or -- CR_SERVER_LOST
