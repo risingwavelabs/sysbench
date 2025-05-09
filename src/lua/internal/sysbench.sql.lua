@@ -250,8 +250,7 @@ function connection_methods.check_error(self, rs, query)
    }
    
    -- Reconnect for PG drv.
-   if errdesc.sql_state == "08000" or
-      errdesc.sql_state == "XX000"
+   if errdesc.sql_state == "08000"
    then
       print(string.format(
        "Reconnecting to the database after error %d: %s.",

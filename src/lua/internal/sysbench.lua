@@ -20,6 +20,7 @@ ffi.cdef[[
 void sb_event_start(int thread_id);
 void sb_event_stop(int thread_id);
 bool sb_more_events(int thread_id);
+void sb_on_restart_event(int thread_id);
 ]]
 
 -- ----------------------------------------------------------------------
@@ -40,6 +41,7 @@ function thread_run(thread_id)
                if sysbench.hooks.before_restart_event then
                   sysbench.hooks.before_restart_event(ret)
                end
+               ffi.C.sb_on_restart_event(thread_id)
             else
                error(ret, 2) -- propagate unknown errors
             end

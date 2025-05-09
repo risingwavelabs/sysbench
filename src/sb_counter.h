@@ -42,6 +42,7 @@ typedef enum {
   SB_CNT_BYTES_READ,    /* bytes read */
   SB_CNT_BYTES_WRITTEN, /* bytes written */
   SB_DURATION_RECONNECT,/* milliseconds spent reconnecting */
+  SB_DURATION_FAILURE,  /* milliseconds spent on failure */
   SB_CNT_MAX
 } sb_counter_type_t;
 

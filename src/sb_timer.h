@@ -83,6 +83,7 @@ typedef struct
 {
   struct timespec time_start;
   struct timespec time_end;
+  struct timespec time_event_restart;
   uint64_t        events;
   uint64_t        queue_time;
   uint64_t        min_time;
@@ -91,7 +92,7 @@ typedef struct
 
   ck_spinlock_t   lock;
 
-  char pad[SB_CACHELINE_PAD(sizeof(struct timespec)*2 + sizeof(uint64_t)*5 +
+  char pad[SB_CACHELINE_PAD(sizeof(struct timespec)*3 + sizeof(uint64_t)*5 +
                             sizeof(ck_spinlock_t))];
 } sb_timer_t;
 
@@ -119,6 +120,7 @@ static inline void sb_timer_start(sb_timer_t *t)
   ck_spinlock_lock(&t->lock);
 
   SB_GETTIME(&t->time_start);
+  t->time_event_restart = t->time_start;
 
   ck_spinlock_unlock(&t->lock);
 }
@@ -143,6 +145,21 @@ static inline uint64_t sb_timer_stop(sb_timer_t *t)
   ck_spinlock_unlock(&t->lock);
 
   return elapsed;
+}
+
+/* restart event timer */
+static inline uint64_t sb_event_timer_restart(sb_timer_t *t)
+{
+  struct timespec ts;
+  SB_GETTIME(&ts);
+
+  ck_spinlock_lock(&t->lock);
+  // TODO: handle t->queue_time
+  uint64_t elapsed = TIMESPEC_DIFF(ts, t->time_event_restart);
+  t->time_event_restart = ts;
+
+  ck_spinlock_unlock(&t->lock);
+  return NS2MS(elapsed);
 }
 
 /*

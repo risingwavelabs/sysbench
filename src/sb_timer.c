@@ -42,6 +42,7 @@ void sb_timer_init(sb_timer_t *t)
 
   memset(&t->time_start, 0, sizeof(struct timespec));
   memset(&t->time_end, 0, sizeof(struct timespec));
+  memset(&t->time_event_restart, 0, sizeof(struct timespec));
 
   ck_spinlock_init(&t->lock);
 

@@ -111,6 +111,7 @@ typedef struct {
   uint64_t queue_length;        /* Event queue length (tx_rate-only) */
   uint64_t concurrency;         /* Number of in-flight events (tx_rate-only) */
   uint64_t ms_reconnect;        /* milliseconds spent reconnecting */
+  uint64_t ms_failure;          /* milliseconds spent on failure */
 } sb_stat_t;
 
 /* Commands */
@@ -227,6 +228,7 @@ bool sb_more_events(int thread_id);
 sb_event_t sb_next_event(sb_test_t *test, int thread_id);
 void sb_event_start(int thread_id);
 void sb_event_stop(int thread_id);
+void sb_on_restart_event(int thread_id);
 
 /* Print a description of available command line options for the current test */
 void sb_print_test_options(void);
