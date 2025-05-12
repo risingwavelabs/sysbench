@@ -55,6 +55,8 @@ sysbench.cmdline.options = {
       {"Number of DELETE/INSERT combinations per transaction", 1},
    range_selects =
       {"Enable/disable all range SELECT queries", true},
+   count_alls =
+      {"Number of COUNT(*) queries per transaction", 1},
    auto_inc =
    {"Use AUTO_INCREMENT column as Primary Key (for MySQL), " ..
        "or its alternatives in other DBMS. When disabled, use " ..
@@ -303,6 +305,9 @@ local stmt_defs = {
    inserts = {
       "INSERT INTO sbtest%u (id, k, c, pad) VALUES (?, ?, ?, ?)",
       t.INT, t.INT, {t.CHAR, 120}, {t.CHAR, 60}},
+   count_alls = {
+      "SELECT COUNT(*) FROM sbtest%u",
+      t.INT},
 }
 
 function prepare_begin()
@@ -348,6 +353,10 @@ end
 function prepare_point_selects()
    prepare_for_each_table("point_selects")
 end
+
+function prepare_count_alls()
+    prepare_for_each_table("count_alls")
+ end
 
 function prepare_simple_ranges()
    prepare_for_each_table("simple_ranges")
@@ -457,6 +466,17 @@ function execute_point_selects()
       stmt[tnum].point_selects:execute()
    end
 end
+
+function execute_count_alls()
+    local tnum = get_table_num()
+    local i
+ 
+    for i = 1, sysbench.opt.count_alls do
+       param[tnum].count_alls[1]:set(get_id())
+ 
+       stmt[tnum].count_alls:execute()
+    end
+ end
 
 local function execute_range(key)
    local tnum = get_table_num()
