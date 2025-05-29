@@ -308,6 +308,9 @@ local stmt_defs = {
    count_alls = {
       "SELECT COUNT(*) FROM sbtest%u",
       t.INT},
+   load_tests = {
+      "SELECT count(*) FROM sbtest%u t1 join sbtest1 t2 on t1.id = t2.id join sbtest1 t3 on t2.id = t3.id WHERE t1.id = ?",
+      t.INT},
 }
 
 function prepare_begin()
@@ -356,7 +359,11 @@ end
 
 function prepare_count_alls()
     prepare_for_each_table("count_alls")
- end
+end
+
+function prepare_load_tests()
+    prepare_for_each_table("load_tests")
+end
 
 function prepare_simple_ranges()
    prepare_for_each_table("simple_ranges")
@@ -472,11 +479,19 @@ function execute_count_alls()
     local i
  
     for i = 1, sysbench.opt.count_alls do
-       param[tnum].count_alls[1]:set(get_id())
- 
-       stmt[tnum].count_alls:execute()
+        param[tnum].count_alls[1]:set(get_id())
+
+        stmt[tnum].count_alls:execute()
     end
- end
+end
+
+function execute_load_tests()
+    local tnum = get_table_num()
+    local i
+ 
+    param[tnum].load_tests[1]:set(get_id())
+    stmt[tnum].load_tests:execute()
+end
 
 local function execute_range(key)
    local tnum = get_table_num()
