@@ -20,6 +20,7 @@ ffi.cdef[[
 void sb_event_start(int thread_id);
 void sb_event_stop(int thread_id);
 bool sb_more_events(int thread_id);
+void sb_on_restart_event(int thread_id);
 ]]
 
 -- ----------------------------------------------------------------------
@@ -40,6 +41,7 @@ function thread_run(thread_id)
                if sysbench.hooks.before_restart_event then
                   sysbench.hooks.before_restart_event(ret)
                end
+               ffi.C.sb_on_restart_event(thread_id)
             else
                error(ret, 2) -- propagate unknown errors
             end
@@ -64,6 +66,15 @@ sysbench.hooks = {
    -- report_intermediate = <func>,
    -- report_cumulative = <func>
 }
+
+function sysbench.hooks.sql_error_ignorable(errdesc)
+   if errdesc.sql_state == "08000" or 
+      errdesc.sql_state == "XX000" 
+   then
+      return true
+   end
+   return false
+end
 
 -- Report statistics in the CSV format. Add the following to your
 -- script to replace the default human-readable reports

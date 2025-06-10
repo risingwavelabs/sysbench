@@ -554,8 +554,18 @@ static db_error_t pgsql_check_status(db_conn_t *con, PGresult *pgres,
     xfree(con->sql_state);
     xfree(con->sql_errmsg);
 
-    con->sql_state = strdup(PQresultErrorField(pgres, PG_DIAG_SQLSTATE));
-    con->sql_errmsg = strdup(PQresultErrorField(pgres, PG_DIAG_MESSAGE_PRIMARY));
+    // Handle unknown error: https://github.com/cockroachdb/cockroach/issues/32738
+    char *sql_state = PQresultErrorField(pgres, PG_DIAG_SQLSTATE);
+    if (sql_state == NULL)
+      // connection_exception https://www.postgresql.org/docs/current/errcodes-appendix.html
+      con->sql_state = strdup("08000");
+    else
+      con->sql_state = strdup(sql_state);
+    char *sql_errmsg = PQresultErrorField(pgres, PG_DIAG_MESSAGE_PRIMARY);
+    if (sql_errmsg == NULL)
+      con->sql_errmsg = strdup("unknown_error");
+    else
+      con->sql_errmsg = strdup(sql_errmsg);
 
     if (!strcmp(con->sql_state, "40P01") /* deadlock_detected */ ||
         !strcmp(con->sql_state, "23505") /* unique violation */ ||

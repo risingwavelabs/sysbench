@@ -248,6 +248,15 @@ function connection_methods.check_error(self, rs, query)
       sql_state = sql_state,
       sql_errmsg = sql_errmsg
    }
+   
+   -- Reconnect for PG drv.
+   if errdesc.sql_state == "08000"
+   then
+      print(string.format(
+       "Reconnecting to the database after error %d: %s.",
+      errdesc.sql_errno, errdesc.sql_state))
+      con:reconnect()
+   end
 
    -- Check if the error has already been marked as ignorable by the driver, or
    -- there is an error hook that allows downgrading it to IGNORABLE
